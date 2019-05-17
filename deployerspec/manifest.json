@@ -1,0 +1,30 @@
+{
+  "manifest_version_major": 1,
+  "deployer_image": "fn61/infrastructureascode:20190107_1257_ec16791b",
+  "deploy_command": ["/work/deploy.sh"],
+  "download_artefacts": [
+    "lambdafunc.zip"
+  ],
+  "download_artefact_urltemplate": "https://dl.bintray.com/function61/dl/onni/{version}/{filename}",
+  "env_vars": [
+    {
+      "key": "TF_VAR_region",
+      "optional": false,
+      "placeholder": "us-east-1",
+      "help": "AWS region of your Lambda function"
+    },
+    {
+      "key": "AWS_ACCESS_KEY_ID",
+      "optional": false,
+      "placeholder": "AKI..",
+      "help": ""
+    },
+    {
+      "key": "AWS_SECRET_ACCESS_KEY",
+      "optional": false,
+      "placeholder": "",
+      "help": ""
+    }
+  ],
+  "software_unique_id": "8e227a49-563e-4ee2-b137-e9df26f0e8b5"
+}
