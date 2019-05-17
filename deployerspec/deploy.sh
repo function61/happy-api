@@ -13,7 +13,7 @@ echo "zip_filename = \"$newZipName\"" > terraform.tfvars
 
 terraform init
 
-planFilename="update.plan"
+planFilename="/state/update.plan"
 
 terraform plan -state "$statefile" -out "$planFilename"
 
@@ -21,4 +21,4 @@ terraform plan -state "$statefile" -out "$planFilename"
 echo "[press any key to deploy or ctrl-c to abort]"
 read DUMMY
 
-terraform apply -state "$statefile" "$planFilename"
+terraform apply "$planFilename"
