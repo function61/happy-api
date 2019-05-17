@@ -16,9 +16,21 @@ var happiness = []string{
 }
 
 func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	idx := randBetween(0, len(happiness)-1)
+	synopsis := req.HTTPMethod + " " + req.Path
 
-	return redirect(happiness[idx]), nil
+	switch synopsis {
+	case "GET /": // root should redirect to project homepage
+		return redirect("https://github.com/function61/onni"), nil
+	case "GET /happy": // root should redirect to project homepage
+		idx := randBetween(0, len(happiness)-1)
+
+		return redirect(happiness[idx]), nil
+	default:
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusNotFound,
+			Body:       fmt.Sprintf("Unknown endpoint: %s", synopsis),
+		}, nil
+	}
 }
 
 func main() {
