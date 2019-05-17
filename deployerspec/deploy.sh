@@ -4,7 +4,7 @@
 newZipName="lamdafunc-$FRIENDLY_REV_ID.zip"
 
 if [ ! -e "$newZipName" ]; then
-	ln -s "lamdafunc.zip" "$newZipName"
+	ln -s "lambdafunc.zip" "$newZipName"
 fi
 
 echo "zip_filename = \"$newZipName\"" > terraform.tfvars
