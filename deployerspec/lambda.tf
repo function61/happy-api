@@ -8,7 +8,7 @@ provider "aws" {
 
 resource "aws_lambda_function" "onni" {
 	function_name = "Onni"
-	description = "Checks that important web properties are working."
+	# description = "Checks that important web properties are working."
 
 	# won't get updated to Lambda unless the path changes every time - that's why we need
 	# to embed version in filename and make this a variable
@@ -26,6 +26,7 @@ resource "aws_lambda_function" "onni" {
 }
 
 module "apigateway" {
+	lambda_name = "${aws_lambda_function.onni.function_name}"
 	lambda_arn = "${aws_lambda_function.onni.arn}"
 	lambda_invoke_arn = "${aws_lambda_function.onni.invoke_arn}"
   source = "./apigatewaybullshit"

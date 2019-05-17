@@ -2,9 +2,10 @@
 # inputs
 variable "lambda_arn" {}
 variable "lambda_invoke_arn" {}
+variable "lambda_name" {}
 
 resource "aws_api_gateway_rest_api" "restapi" {
-	name        = "${var.lambda_arn}"
+	name        = "${var.lambda_name}"
 	description = "Boilerplate for Lambda proxy"
 }
 
