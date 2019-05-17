@@ -10,9 +10,13 @@ import (
 	"time"
 )
 
-var happiness = []string{
-	"https://twitter.com/respros/status/1121496846042636289",
-	"http://www.awesomelycute.com/2015/04/25-of-the-cutest-kittens-ever/",
+type Happiness struct {
+	Source string // TODO: store happiness in images to make them immutable
+}
+
+var happiness = []Happiness{
+	{"https://twitter.com/respros/status/1121496846042636289"},
+	{"http://www.awesomelycute.com/2015/04/25-of-the-cutest-kittens-ever/"},
 }
 
 func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -24,7 +28,7 @@ func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events
 	case "GET /happy": // root should redirect to project homepage
 		idx := randBetween(0, len(happiness)-1)
 
-		return redirect(happiness[idx]), nil
+		return redirect(happiness[idx].Source), nil
 	default:
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusNotFound,

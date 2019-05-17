@@ -46,6 +46,6 @@ Now edit above file with your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 Then do the actual deployment:
 
 ```
-$ version="..." # find this from above Bintray link
+$ version="..."
 $ deployer deploy onni "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
 ```
