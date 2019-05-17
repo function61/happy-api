@@ -12,7 +12,7 @@ NOTE: this is a very new project and the URL will change to a prettier domain so
 Use case
 --------
 
-I wanted to have a "Have a happy day!" wish at the bottom of a web app I offer for my
+I wanted to have a "Have a happy day!" wish at the footer of a web app I offer for my
 customers. I wanted the "happy" word to be a link that takes the user to a random picture
 on the internet that brings happiness.
 
@@ -46,5 +46,6 @@ Now edit above file with your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 Then do the actual deployment:
 
 ```
-$ deployer deploy -i onni "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
+$ version="..." # find this from above Bintray link
+$ deployer deploy onni "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
 ```
