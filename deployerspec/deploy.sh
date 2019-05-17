@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 # the zip name needs to change from previous deployment for it to be considered new
-newZipName="lamdafunc-$FRIENDLY_REV_ID.zip"
+newZipName="lambdafunc-$FRIENDLY_REV_ID.zip"
 
 if [ ! -e "$newZipName" ]; then
 	ln -s "lambdafunc.zip" "$newZipName"
