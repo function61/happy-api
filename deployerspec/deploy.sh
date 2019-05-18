@@ -1,24 +1,52 @@
 #!/bin/bash -eu
 
-# the zip name needs to change from previous deployment for it to be considered new
-newZipName="lambdafunc-$FRIENDLY_REV_ID.zip"
+export TF_IN_AUTOMATION=1
 
 statefile="/state/terraform.tfstate"
+planFilename="/work/update.plan"
 
-if [ ! -e "$newZipName" ]; then
-	ln -s "lambdafunc.zip" "$newZipName"
-fi
+# the zip name needs to change from previous deployment for it to be considered new
+function renameZipToUniqueFilename {
+	local newZipName="lambdafunc-$FRIENDLY_REV_ID.zip"
 
-echo "zip_filename = \"$newZipName\"" > terraform.tfvars
+	if [ ! -e "$newZipName" ]; then
+		ln -s "lambdafunc.zip" "$newZipName"
+	fi
 
-terraform init
+	echo "zip_filename = \"$newZipName\"" > terraform.tfvars
+}
 
-planFilename="/state/update.plan"
+function backupStatefile {
+	if [ -e "$statefile" ]; then
+		cp "$statefile" "$statefile.bak"
+	fi
+}
 
-terraform plan -state "$statefile" -out "$planFilename"
+function setupTerraform {
+	# needed for Terraform to resolve modules
+	terraform get
+}
+
+function generateUpdatePlan {
+	terraform plan -state "$statefile" -out "$planFilename"
+}
+
+function terraformApply {
+	# we can't give "-state" flag to apply verb if we're using an execution plan, and Terraform
+	# will save to current workdir which is fucking different than what was given in plan verb...
+	terraform apply -state-out "$statefile" "$planFilename"
+}
+
+renameZipToUniqueFilename
+
+backupStatefile
+
+setupTerraform
+
+generateUpdatePlan
 
 # wait for enter
 echo "[press any key to deploy or ctrl-c to abort]"
 read DUMMY
 
-terraform apply "$planFilename"
+terraformApply
