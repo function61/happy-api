@@ -16,12 +16,6 @@ function renameZipToUniqueFilename {
 	echo "zip_filename = \"$newZipName\"" > terraform.tfvars
 }
 
-function backupStatefile {
-	if [ -e "$statefile" ]; then
-		cp "$statefile" "$statefile.bak"
-	fi
-}
-
 function setupTerraform {
 	# needed for Terraform to resolve modules
 	terraform get
@@ -38,8 +32,6 @@ function terraformApply {
 }
 
 renameZipToUniqueFilename
-
-backupStatefile
 
 setupTerraform
 
