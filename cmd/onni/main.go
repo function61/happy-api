@@ -10,13 +10,39 @@ import (
 	"time"
 )
 
+const baseUrl = "https://29ha8gbcmc.execute-api.us-east-1.amazonaws.com/prod"
+
+const template = `
+<!doctype html>
+<html>
+<head>
+	<title>Happiness</title>
+</head>
+<body>
+
+<div>
+	<img src="%s" alt="" />
+
+	<hr />
+
+	<a href="%s">Source</a>
+</div>
+
+<div>
+	<a href="%s/happy">Show me another</a>
+</div>
+
+</body>
+</html>
+`
+
 type Happiness struct {
-	Source string // TODO: store happiness in images to make them immutable
+	Id     string
+	Source string
 }
 
 var happiness = []Happiness{
-	{"https://twitter.com/respros/status/1121496846042636289"},
-	{"http://www.awesomelycute.com/2015/04/25-of-the-cutest-kittens-ever/"},
+	{"10e239c4167f", "https://gizmodo.com/owls-are-weighed-wrapped-up-in-blankets-like-little-bir-1621869419"},
 }
 
 func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -26,9 +52,32 @@ func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events
 	case "GET /": // root should redirect to project homepage
 		return redirect("https://github.com/function61/onni"), nil
 	case "GET /happy": // root should redirect to project homepage
-		idx := randBetween(0, len(happiness)-1)
+		id := req.QueryStringParameters["id"]
 
-		return redirect(happiness[idx].Source), nil
+		if id != "" {
+			record := findRecord(id)
+			if record == nil {
+				return events.APIGatewayProxyResponse{
+					StatusCode: http.StatusNotFound,
+					Body:       "file not found",
+				}, nil
+			}
+			return events.APIGatewayProxyResponse{
+				StatusCode: http.StatusOK,
+				Headers: map[string]string{
+					"Content-Type": "text/html",
+				},
+				Body: fmt.Sprintf(
+					template,
+					makeMediaUrl(id),
+					record.Source,
+					baseUrl),
+			}, nil
+		} else {
+			idx := randBetween(0, len(happiness)-1)
+
+			return redirect(baseUrl + "/happy?id=" + happiness[idx].Id), nil
+		}
 	default:
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusNotFound,
@@ -44,6 +93,15 @@ func main() {
 	lambda.Start(onniHandler)
 }
 
+func findRecord(id string) *Happiness {
+	for _, record := range happiness {
+		if record.Id == id {
+			return &record
+		}
+	}
+
+	return nil
+}
 func randBetween(min, max int) int {
 	return min + rand.Intn(max-min+1)
 }
@@ -56,4 +114,8 @@ func redirect(to string) events.APIGatewayProxyResponse {
 		},
 		Body: fmt.Sprintf("Redirecting to %s", to),
 	}
+}
+
+func makeMediaUrl(id string) string {
+	return "https://s3.amazonaws.com/onni.function61.com/media/" + id
 }
