@@ -35,6 +35,7 @@ resource "aws_lambda_function" "onni" {
 resource "aws_s3_bucket" "mediabucket" {
   bucket = "${var.s3_bucket}"
   acl    = "public-read"
+  policy = "{\"Version\": \"2008-10-17\", \"Statement\": [{ \"Sid\": \"AllowPublicRead\", \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"*\" }, \"Action\": \"s3:GetObject\", \"Resource\": \"arn:aws:s3:::${var.s3_bucket}/*\" } ]}"
 }
 
 module "apigateway" {
