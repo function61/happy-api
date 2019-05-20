@@ -1,8 +1,10 @@
 
 # inputs
-variable "lambda_arn" {}
-variable "lambda_invoke_arn" {}
 variable "lambda_name" {}
+
+data "aws_lambda_function" "fn" {
+  function_name = "${var.lambda_name}"
+}
 
 resource "aws_api_gateway_rest_api" "restapi" {
 	name        = "${var.lambda_name}"
@@ -36,7 +38,7 @@ resource "aws_api_gateway_integration" "lambda_root" {
 
 	integration_http_method = "POST"
 	type                    = "AWS_PROXY"
-	uri                     = "${var.lambda_invoke_arn}"
+	uri                     = "${aws_lambda_function.fn.invoke_arn}"
 }
 
 resource "aws_api_gateway_integration" "lambda" {
@@ -46,7 +48,7 @@ resource "aws_api_gateway_integration" "lambda" {
 
 	integration_http_method = "POST"
 	type                    = "AWS_PROXY"
-	uri                     = "${var.lambda_invoke_arn}"
+	uri                     = "${aws_lambda_function.fn.invoke_arn}"
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
