@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-const baseUrl = "https://29ha8gbcmc.execute-api.us-east-1.amazonaws.com/prod"
-
 const template = `
 <!doctype html>
 <html>
@@ -71,12 +69,12 @@ func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events
 					template,
 					makeMediaUrl(id),
 					record.Source,
-					baseUrl),
+					createBaseUrl(req)),
 			}, nil
 		} else {
 			idx := randBetween(0, len(happiness)-1)
 
-			return redirect(baseUrl + "/happy?id=" + happiness[idx].Id), nil
+			return redirect(createBaseUrl(req) + "/happy?id=" + happiness[idx].Id), nil
 		}
 	default:
 		return events.APIGatewayProxyResponse{
@@ -118,4 +116,8 @@ func redirect(to string) events.APIGatewayProxyResponse {
 
 func makeMediaUrl(id string) string {
 	return "https://s3.amazonaws.com/onni.function61.com/media/" + id
+}
+
+func createBaseUrl(req events.APIGatewayProxyRequest) string {
+	return "https://" + req.RequestContext.APIID + ".execute-api.us-east-1.amazonaws.com/prod"
 }
