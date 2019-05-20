@@ -3,7 +3,7 @@
 
 REST API for delivering happiness.
 
-tl;dr: put [this URL](https://29ha8gbcmc.execute-api.us-east-1.amazonaws.com/prod/happy)
+tl;dr: put [this URL](https://lmphidqfck.execute-api.us-east-1.amazonaws.com/prod/happy)
 to your application to enable your users to get their daily dose of happiness.
 
 NOTE: this is a very new project and the URL will change to a prettier domain soon.
