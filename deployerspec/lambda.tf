@@ -1,6 +1,7 @@
 
 variable "zip_filename" { type = "string" }
 variable "region" { type = "string" }
+variable "s3_bucket" { type = "string" }
 
 provider "aws" {
 	region = "${var.region}"
@@ -22,7 +23,18 @@ resource "aws_lambda_function" "onni" {
 	# FIXME
 	role = "arn:aws:iam::329074924855:role/AlertManager"
 
-	timeout = 60
+	timeout = 10
+
+	environment {
+		variables = {
+			S3_BUCKET = "${var.s3_bucket}"
+		}
+	}
+}
+
+resource "aws_s3_bucket" "mediabucket" {
+  bucket = "${var.s3_bucket}"
+  acl    = "public-read"
 }
 
 module "apigateway" {

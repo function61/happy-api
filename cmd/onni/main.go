@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -100,6 +101,7 @@ func findRecord(id string) *Happiness {
 
 	return nil
 }
+
 func randBetween(min, max int) int {
 	return min + rand.Intn(max-min+1)
 }
@@ -115,7 +117,7 @@ func redirect(to string) events.APIGatewayProxyResponse {
 }
 
 func makeMediaUrl(id string) string {
-	return "https://s3.amazonaws.com/onni.function61.com/media/" + id
+	return "https://s3.amazonaws.com/" + os.Getenv("S3_BUCKET") + "/media/" + id
 }
 
 func createBaseUrl(req events.APIGatewayProxyRequest) string {
