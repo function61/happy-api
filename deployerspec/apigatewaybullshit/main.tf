@@ -4,6 +4,7 @@ variable "lambda_name" {}
 
 data "aws_lambda_function" "fn" {
   function_name = "${var.lambda_name}"
+  qualifier     = "" # workaround to ensure the arn doesn't container a qualifier
 }
 
 resource "aws_api_gateway_rest_api" "restapi" {
