@@ -2,6 +2,7 @@
 variable "zip_filename" { type = "string" }
 variable "region" { type = "string" }
 variable "s3_bucket" { type = "string" }
+variable "base_url" { type = "string" }
 
 provider "aws" {
 	region = "${var.region}"
