@@ -28,6 +28,7 @@ resource "aws_lambda_function" "onni" {
 	environment {
 		variables = {
 			S3_BUCKET = "${var.s3_bucket}"
+			BASE_URL = "${var.base_url}"
 		}
 	}
 }

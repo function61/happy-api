@@ -140,5 +140,5 @@ func makeMediaUrl(id string) string {
 }
 
 func createBaseUrl(req events.APIGatewayProxyRequest) string {
-	return "https://" + req.RequestContext.APIID + ".execute-api.us-east-1.amazonaws.com/prod"
+	return os.Getenv("BASE_URL")
 }

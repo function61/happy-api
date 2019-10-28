@@ -20,6 +20,12 @@
       "help": "Name of S3 bucket to use"
     },
     {
+      "key": "TF_VAR_base_url",
+      "optional": false,
+      "placeholder": "/api/onni",
+      "help": "Base URL behind which this API resides at"
+    },
+    {
       "key": "AWS_ACCESS_KEY_ID",
       "optional": false,
       "placeholder": "AKI..",
