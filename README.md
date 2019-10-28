@@ -1,7 +1,7 @@
 [![Build Status](https://img.shields.io/travis/function61/onni.svg?style=for-the-badge)](https://travis-ci.org/function61/onni)
 [![Download](https://img.shields.io/badge/Download-bintray%20latest-blue.svg?style=for-the-badge)](https://bintray.com/function61/dl/onni/_latestVersion#files)
 
-REST API for delivering happiness.
+REST API for delivering happiness - hosted on AWS Lambda.
 
 tl;dr: put [this URL](https://lmphidqfck.execute-api.us-east-1.amazonaws.com/prod/happy)
 to your application to enable your users to get their daily dose of happiness.
@@ -12,15 +12,29 @@ NOTE: this is a very new project and the URL will change to a prettier domain so
 Use case
 --------
 
-I wanted to have a "Have a happy day!" wish at the footer of a web app I offer for my
-customers. I wanted the "happy" word to be a link that takes the user to a random picture
-on the internet that brings happiness.
+I wanted to have a "Enjoy your day!" wish at the footer of a web app I offer for my users.
+I wanted the "enjoy" word to be a link that takes the user to a random picture on the
+internet that brings happiness:
+
+![](docs/example-ui.png)
 
 
-Contributing
-------------
+Can I too use the URL?
+----------------------
 
-(this currently only works for me - the project maintainer - public submission may be coming later)
+Yes! And don't be afraid to use it - I make the following promises:
+
+- The URL is the API and it won't change, or if it will the old URL will get redirected (i.e. still work)
+
+- The pictures will be family friendly
+
+- The service won't have ads, or if it the long term will have ads they will be unobtrusive text-only ads.
+
+
+Adding new pictures
+-------------------
+
+This currently only works for me - the project maintainer. Public submission may be coming later.
 
 - Use [Online UUID Generator](https://www.uuidgenerator.net/) to generate UUID like this:
 `10e239c4167f` (it's the two parts between both sides of the first dash).
