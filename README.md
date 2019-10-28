@@ -20,7 +20,14 @@ on the internet that brings happiness.
 Contributing
 ------------
 
-TODO
+(this currently only works for me - the project maintainer - public submission may be coming later)
+
+- Use [Online UUID Generator](https://www.uuidgenerator.net/) to generate UUID like this:
+`10e239c4167f` (it's the two parts between both sides of the first dash).
+
+- Upload images to `onni.function61.com` S3 bucket. Remember to set `Content-Type: image/jpeg` (or similar)
+
+- Add references to main.go, remember to sort lines!
 
 
 How to deploy
@@ -35,7 +42,7 @@ You don't need it and you can upload Lambda zip and configure API gateway manual
 You have to do this only for the first time:
 
 ```
-$ mkdir -p deployments
+$ mkdir deployments
 $ version="..." # find this from above Bintray link
 $ deployer deployment-init onni "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
 Wrote /home/joonas/deployments/onni/user-config.json
