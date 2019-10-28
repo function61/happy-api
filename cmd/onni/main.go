@@ -1,17 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"html/template"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
 )
 
-const template = `
+var uiTpl, _ = template.New("_").Parse(`
 <!doctype html>
 <html>
 <head>
@@ -20,24 +22,28 @@ const template = `
 <body>
 
 <div>
-	<img src="%s" alt="" />
+	<img src="{{.ImgSrc}}" alt="" />
 
 	<hr />
 
-	<a href="%s">Source</a>
+{{if .Attribution}}
+	<a href="{{.Attribution}}">Source</a>
+{{else}}
+	Source not known
+{{end}}
 </div>
 
 <div>
-	<a href="%s/happy">Show me another</a>
+	<a href="{{.BaseUrl}}/happy">Show me another</a>
 </div>
 
 </body>
 </html>
-`
+`)
 
 type Happiness struct {
-	Id     string
-	Source string
+	Id          string
+	Attribution string
 }
 
 var happiness = []Happiness{
@@ -61,16 +67,24 @@ func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events
 					Body:       "file not found",
 				}, nil
 			}
+
+			responseBody := &bytes.Buffer{}
+			uiTpl.Execute(responseBody, struct {
+				ImgSrc      string
+				Attribution string
+				BaseUrl     string
+			}{
+				ImgSrc:      makeMediaUrl(id),
+				Attribution: record.Attribution,
+				BaseUrl:     createBaseUrl(req),
+			})
+
 			return events.APIGatewayProxyResponse{
 				StatusCode: http.StatusOK,
 				Headers: map[string]string{
 					"Content-Type": "text/html",
 				},
-				Body: fmt.Sprintf(
-					template,
-					makeMediaUrl(id),
-					record.Source,
-					createBaseUrl(req)),
+				Body: responseBody.String(),
 			}, nil
 		} else {
 			idx := randBetween(0, len(happiness)-1)
