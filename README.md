@@ -18,6 +18,10 @@ internet that brings happiness:
 
 ![](docs/example-ui.png)
 
+**click** gets you:
+
+![](docs/example-happiness.png)
+
 
 Can I too use the URL?
 ----------------------
@@ -28,7 +32,7 @@ Yes! And don't be afraid to use it - I make the following promises:
 
 - The pictures will be family friendly
 
-- The service won't have ads, or if it the long term will have ads they will be unobtrusive text-only ads.
+- The service won't have ads, or if in the long term will have ads they will be unobtrusive text-only ads.
 
 
 Adding new pictures
