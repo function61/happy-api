@@ -1,12 +1,10 @@
-[![Build Status](https://img.shields.io/travis/function61/onni.svg?style=for-the-badge)](https://travis-ci.org/function61/onni)
-[![Download](https://img.shields.io/badge/Download-bintray%20latest-blue.svg?style=for-the-badge)](https://bintray.com/function61/dl/onni/_latestVersion#files)
+![Build status](https://github.com/function61/happy-api/workflows/Build/badge.svg)
+[![Download](https://img.shields.io/github/downloads/function61/happy-api/total.svg?style=for-the-badge)](https://github.com/function61/happy-api/releases)
 
 REST API for delivering happiness - hosted on AWS Lambda.
 
-tl;dr: put [this URL](https://function61.com/api/happy)
-to your application to enable your users to get their daily dose of happiness.
-
-NOTE: this is a very new project and the URL will change to a prettier domain soon.
+tl;dr: put URL https://function61.com/api/happy
+in your application to enable your users to get their daily dose of happiness.
 
 
 Use case
@@ -61,8 +59,7 @@ You have to do this only for the first time:
 
 ```
 $ mkdir deployments
-$ version="..." # find this from above Bintray link
-$ deployer deployment-init happy-api "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
+$ deployer deployment-init happy-api "url_to_deployerspec.zip_in_GitHub_releases"
 Wrote /home/joonas/deployments/happy-api/user-config.json
 ```
 
@@ -72,5 +69,5 @@ Then do the actual deployment:
 
 ```
 $ version="..."
-$ deployer deploy happy-api "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
+$ deployer deploy happy-api "same_url_as_in_init"
 ```
