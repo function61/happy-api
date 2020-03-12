@@ -8,15 +8,15 @@ provider "aws" {
 	region = "${var.region}"
 }
 
-resource "aws_lambda_function" "onni" {
-	function_name = "Onni"
-	description = "REST API for delivering happiness"
+resource "aws_lambda_function" "happyapi" {
+	function_name = "Happy-API"
+	description = "API for delivering happiness"
 
 	# won't get updated to Lambda unless the path changes every time - that's why we need
 	# to embed version in filename and make this a variable
 	filename = "${var.zip_filename}"
 
-	handler = "onni"
+	handler = "happy-api"
 
 	# https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html
 	runtime = "go1.x"
@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "mediabucket" {
 }
 
 module "apigateway" {
-	lambda_name = "${aws_lambda_function.onni.function_name}"
+	lambda_name = "${aws_lambda_function.happyapi.function_name}"
   source = "./apigatewaybullshit"
 }
 

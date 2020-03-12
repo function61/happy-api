@@ -2,8 +2,8 @@
 
 source /build-common.sh
 
-BINARY_NAME="onni"
-COMPILE_IN_DIRECTORY="cmd/onni"
+BINARY_NAME="happy-api"
+COMPILE_IN_DIRECTORY="cmd/happy-api"
 
 function packageLambdaFunction {
 	cd rel/

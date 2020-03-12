@@ -3,7 +3,7 @@
 
 REST API for delivering happiness - hosted on AWS Lambda.
 
-tl;dr: put [this URL](https://lmphidqfck.execute-api.us-east-1.amazonaws.com/prod/happy)
+tl;dr: put [this URL](https://function61.com/api/happy)
 to your application to enable your users to get their daily dose of happiness.
 
 NOTE: this is a very new project and the URL will change to a prettier domain soon.
@@ -62,8 +62,8 @@ You have to do this only for the first time:
 ```
 $ mkdir deployments
 $ version="..." # find this from above Bintray link
-$ deployer deployment-init onni "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
-Wrote /home/joonas/deployments/onni/user-config.json
+$ deployer deployment-init happy-api "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
+Wrote /home/joonas/deployments/happy-api/user-config.json
 ```
 
 Now edit above file with your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
@@ -72,5 +72,5 @@ Then do the actual deployment:
 
 ```
 $ version="..."
-$ deployer deploy onni "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
+$ deployer deploy happy-api "https://dl.bintray.com/function61/dl/onni/$version/deployerspec.zip"
 ```
