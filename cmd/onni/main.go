@@ -60,7 +60,7 @@ func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events
 			}
 
 			responseBody := &bytes.Buffer{}
-			uiTpl.Execute(responseBody, struct {
+			_ = uiTpl.Execute(responseBody, struct {
 				ImgSrc      string
 				Attribution string
 				BaseUrl     string
