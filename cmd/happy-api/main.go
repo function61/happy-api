@@ -1,12 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/function61/gokit/aws/lambdautils"
+	"github.com/function61/gokit/httputils"
+	"github.com/function61/gokit/logex"
+	"github.com/function61/gokit/ossignal"
+	"github.com/function61/gokit/taskrunner"
+	"github.com/gorilla/mux"
 	"html/template"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -34,67 +39,78 @@ var uiTpl, _ = template.New("_").Parse(`
 </div>
 
 <div>
-	<a href="{{.BaseUrl}}/happy">Show me another</a>
+	<a href="https://function61.com/api/happy/">Show me another</a>
 </div>
 
 </body>
 </html>
 `)
 
-func onniHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	synopsis := req.HTTPMethod + " " + req.Path
-
-	switch synopsis {
-	case "GET /": // root should redirect to project homepage
-		return redirect("https://github.com/function61/onni"), nil
-	case "GET /happy": // root should redirect to project homepage
-		id := req.QueryStringParameters["id"]
-
-		if id != "" {
-			record := findRecord(id)
-			if record == nil {
-				return events.APIGatewayProxyResponse{
-					StatusCode: http.StatusNotFound,
-					Body:       "file not found",
-				}, nil
-			}
-
-			responseBody := &bytes.Buffer{}
-			_ = uiTpl.Execute(responseBody, struct {
-				ImgSrc      string
-				Attribution string
-				BaseUrl     string
-			}{
-				ImgSrc:      makeMediaUrl(id),
-				Attribution: record.Attribution,
-				BaseUrl:     createBaseUrl(req),
-			})
-
-			return events.APIGatewayProxyResponse{
-				StatusCode: http.StatusOK,
-				Headers: map[string]string{
-					"Content-Type": "text/html",
-				},
-				Body: responseBody.String(),
-			}, nil
-		} else {
-			idx := randBetween(0, len(happiness)-1)
-
-			return redirect(createBaseUrl(req) + "/happy?id=" + happiness[idx].Id), nil
-		}
-	default:
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusNotFound,
-			Body:       fmt.Sprintf("Unknown endpoint: %s", synopsis),
-		}, nil
-	}
-}
-
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	// Make the handler available for Remote Procedure Call by AWS Lambda
-	lambda.Start(onniHandler)
+	// AWS Lambda doesn't support giving argv, so we use an ugly hack to detect when
+	// we're in Lambda
+	if lambdautils.InLambda() {
+		lambda.StartHandler(lambdautils.NewLambdaHttpHandlerAdapter(httpHandler()))
+		return
+	}
+
+	rootLogger := logex.StandardLogger()
+
+	exitIfError(runStandaloneRestApi(
+		ossignal.InterruptOrTerminateBackgroundCtx(rootLogger),
+		rootLogger))
+}
+
+func httpHandler() http.Handler {
+	routes := mux.NewRouter()
+
+	routes.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		idx := randBetween(0, len(happiness)-1)
+
+		http.Redirect(w, r, "/api/happy/happiness/"+happiness[idx].Id, http.StatusFound)
+	})
+
+	routes.HandleFunc("/happiness/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+
+		record := findRecord(id)
+		if record == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/html")
+
+		_ = uiTpl.Execute(w, struct {
+			ImgSrc      string
+			Attribution string
+		}{
+			ImgSrc:      makeMediaUrl(id),
+			Attribution: record.Attribution,
+		})
+	})
+
+	return routes
+}
+
+// for standalone use
+func runStandaloneRestApi(ctx context.Context, logger *log.Logger) error {
+	srv := &http.Server{
+		Addr:    ":80",
+		Handler: httpHandler(),
+	}
+
+	tasks := taskrunner.New(ctx, logger)
+
+	tasks.Start("listener "+srv.Addr, func(_ context.Context, _ string) error {
+		return httputils.RemoveGracefulServerClosedError(srv.ListenAndServe())
+	})
+
+	tasks.Start("listenershutdowner", httputils.ServerShutdownTask(srv))
+
+	return tasks.Wait()
 }
 
 func findRecord(id string) *Happiness {
@@ -111,20 +127,13 @@ func randBetween(min, max int) int {
 	return min + rand.Intn(max-min+1)
 }
 
-func redirect(to string) events.APIGatewayProxyResponse {
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusFound,
-		Headers: map[string]string{
-			"Location": to,
-		},
-		Body: fmt.Sprintf("Redirecting to %s", to),
-	}
-}
-
 func makeMediaUrl(id string) string {
-	return "https://s3.amazonaws.com/" + os.Getenv("S3_BUCKET") + "/media/" + id
+	return "https://s3.amazonaws.com/onni.function61.com/media/" + id
 }
 
-func createBaseUrl(req events.APIGatewayProxyRequest) string {
-	return os.Getenv("BASE_URL")
+func exitIfError(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
