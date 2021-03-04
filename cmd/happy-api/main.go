@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"html/template"
 	"math/rand"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/function61/gokit/app/aws/lambdautils"
 	"github.com/function61/gokit/app/dynversion"
-	"github.com/function61/gokit/crypto/cryptoutil"
 	"github.com/function61/gokit/log/logex"
 	"github.com/function61/gokit/net/http/httputils"
 	"github.com/function61/gokit/os/osutil"
@@ -55,14 +53,7 @@ func main() {
 		},
 	}
 
-	app.AddCommand(&cobra.Command{
-		Use:   "new",
-		Short: "Generate ID for new file",
-		Args:  cobra.NoArgs,
-		Run: func(_ *cobra.Command, args []string) {
-			fmt.Println(cryptoutil.RandBase64UrlWithoutLeadingDash(3))
-		},
-	})
+	app.AddCommand(newEntry())
 
 	osutil.ExitIfError(app.Execute())
 }

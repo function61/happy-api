@@ -1,12 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"math/rand"
 	"path/filepath"
 
+	"github.com/function61/gokit/crypto/cryptoutil"
 	"github.com/rwcarlsen/goexif/exif"
+	"github.com/spf13/cobra"
 )
+
+func newEntry() *cobra.Command {
+	return &cobra.Command{
+		Use:   "new",
+		Short: "Generate ID for new file",
+		Args:  cobra.NoArgs,
+		Run: func(_ *cobra.Command, args []string) {
+			fmt.Println(cryptoutil.RandBase64UrlWithoutLeadingDash(3))
+		},
+	}
+}
 
 // 10e239c4167f.jpg => 10e239c4167f
 func fileIdFromFilename(filename string) string {
