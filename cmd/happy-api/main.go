@@ -2,20 +2,17 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/function61/gokit/aws/lambdautils"
-	"github.com/function61/gokit/httputils"
-	"github.com/function61/gokit/logex"
-	"github.com/function61/gokit/ossignal"
-	"github.com/function61/gokit/taskrunner"
+	"github.com/function61/gokit/app/aws/lambdautils"
+	"github.com/function61/gokit/log/logex"
+	"github.com/function61/gokit/net/http/httputils"
+	"github.com/function61/gokit/os/osutil"
 	"github.com/gorilla/mux"
 )
 
@@ -59,8 +56,8 @@ func main() {
 
 	rootLogger := logex.StandardLogger()
 
-	exitIfError(runStandaloneRestApi(
-		ossignal.InterruptOrTerminateBackgroundCtx(rootLogger),
+	osutil.ExitIfError(runStandaloneRestApi(
+		osutil.CancelOnInterruptOrTerminate(rootLogger),
 		rootLogger))
 }
 
@@ -103,15 +100,7 @@ func runStandaloneRestApi(ctx context.Context, logger *log.Logger) error {
 		Handler: httpHandler(),
 	}
 
-	tasks := taskrunner.New(ctx, logger)
-
-	tasks.Start("listener "+srv.Addr, func(_ context.Context, _ string) error {
-		return httputils.RemoveGracefulServerClosedError(srv.ListenAndServe())
-	})
-
-	tasks.Start("listenershutdowner", httputils.ServerShutdownTask(srv))
-
-	return tasks.Wait()
+	return httputils.CancelableServer(ctx, srv, func() error { return srv.ListenAndServe() })
 }
 
 func findRecord(id string) *Happiness {
@@ -130,11 +119,4 @@ func randBetween(min, max int) int {
 
 func makeMediaUrl(id string) string {
 	return "https://s3.amazonaws.com/onni.function61.com/media/" + id
-}
-
-func exitIfError(err error) {
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
 }
