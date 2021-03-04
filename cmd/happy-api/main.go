@@ -3,6 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"html/template"
+	"log"
+	"math/rand"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/function61/gokit/aws/lambdautils"
 	"github.com/function61/gokit/httputils"
@@ -10,12 +17,6 @@ import (
 	"github.com/function61/gokit/ossignal"
 	"github.com/function61/gokit/taskrunner"
 	"github.com/gorilla/mux"
-	"html/template"
-	"log"
-	"math/rand"
-	"net/http"
-	"os"
-	"time"
 )
 
 var uiTpl, _ = template.New("_").Parse(`
