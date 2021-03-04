@@ -83,15 +83,15 @@ func httpHandler() http.Handler {
 	redirectToRandomItem := func(w http.ResponseWriter, r *http.Request) {
 		idx := randBetween(0, len(happiness)-1)
 
-		http.Redirect(w, r, "/api/happy/happiness/"+fileIdFromFilename(happiness[idx].Name()), http.StatusFound)
+		http.Redirect(w, r, "/happy/"+fileIdFromFilename(happiness[idx].Name()), http.StatusFound)
 	}
 
-	routes.HandleFunc("/api/happy", redirectToRandomItem)
-	routes.HandleFunc("/api/happy/", redirectToRandomItem)
+	routes.PathPrefix("/happy/images/").Handler(http.StripPrefix("/happy/", http.FileServer(http.FS(images))))
 
-	routes.PathPrefix("/api/happy/images/").Handler(http.StripPrefix("/api/happy/", http.FileServer(http.FS(images))))
+	routes.HandleFunc("/happy", redirectToRandomItem)
+	routes.HandleFunc("/happy/", redirectToRandomItem)
 
-	routes.HandleFunc("/api/happy/happiness/{id}", func(w http.ResponseWriter, r *http.Request) {
+	routes.HandleFunc("/happy/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 
 		attribution, err := findAttributionFromExifArtist(id)
@@ -110,7 +110,7 @@ func httpHandler() http.Handler {
 			ImgSrc      string
 			Attribution string
 		}{
-			ImgSrc:      "/api/happy/images/" + id + ".jpg",
+			ImgSrc:      "/happy/images/" + id + ".jpg",
 			Attribution: attribution,
 		})
 	})
