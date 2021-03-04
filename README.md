@@ -3,7 +3,7 @@
 
 REST API for delivering happiness - hosted on AWS Lambda.
 
-tl;dr: put URL https://function61.com/api/happy
+tl;dr: put URL https://function61.com/happy
 in your application to enable your users to get their daily dose of happiness.
 
 
@@ -36,14 +36,22 @@ Yes! And don't be afraid to use it - I make the following promises:
 Adding new pictures
 -------------------
 
-This currently only works for me - the project maintainer. Public submission may be coming later.
+Generate new ID for the picture with:
 
-- Use [Online UUID Generator](https://www.uuidgenerator.net/) to generate UUID like this:
-`10e239c4167f` (it's the two parts between both sides of the first dash).
+```console
+$ ./happy-api new
+nohH
+```
 
-- Upload images to `onni.function61.com` S3 bucket. Remember to set `Content-Type: image/jpeg` (or similar)
+Add new picture to [cmd/happy-api/images/](cmd/happy-api/images/).
 
-- Add references to main.go, remember to sort lines!
+Add image attribution with `$ exiftool` command:
+
+```console
+$ exiftool "-artist=https://example.com/" nohH.jpg
+```
+
+Send a pull request.
 
 
 How to deploy
