@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+	<title>Happiness</title>
+</head>
+<body>
+
+<div>
+	<img src="{{.ImgSrc}}" alt="" />
+
+	<hr />
+
+{{if .Attribution}}
+	<a href="{{.Attribution}}">Source</a>
+{{else}}
+	Source not known
+{{end}}
+</div>
+
+<div>
+	<a href="/api/happy/">Show me another</a>
+</div>
+
+</body>
+</html>

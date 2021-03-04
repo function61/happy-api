@@ -1,6 +1,6 @@
 module github.com/function61/happy-api
 
-go 1.13
+go 1.16
 
 require (
 	github.com/aws/aws-lambda-go v1.13.2

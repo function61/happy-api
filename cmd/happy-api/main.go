@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"html/template"
 	"log"
 	"math/rand"
@@ -16,33 +17,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var uiTpl, _ = template.New("_").Parse(`
-<!doctype html>
-<html>
-<head>
-	<title>Happiness</title>
-</head>
-<body>
-
-<div>
-	<img src="{{.ImgSrc}}" alt="" />
-
-	<hr />
-
-{{if .Attribution}}
-	<a href="{{.Attribution}}">Source</a>
-{{else}}
-	Source not known
-{{end}}
-</div>
-
-<div>
-	<a href="/api/happy/">Show me another</a>
-</div>
-
-</body>
-</html>
-`)
+//go:embed item.html
+var templates embed.FS
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -62,6 +38,11 @@ func main() {
 }
 
 func httpHandler() http.Handler {
+	uiTpl, err := template.ParseFS(templates, "item.html")
+	if err != nil {
+		panic(err)
+	}
+
 	routes := mux.NewRouter()
 
 	redirectToRandomItem := func(w http.ResponseWriter, r *http.Request) {
