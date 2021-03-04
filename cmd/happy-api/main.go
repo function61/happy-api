@@ -37,7 +37,7 @@ var uiTpl, _ = template.New("_").Parse(`
 </div>
 
 <div>
-	<a href="https://function61.com/api/happy/">Show me another</a>
+	<a href="/api/happy/">Show me another</a>
 </div>
 
 </body>
@@ -64,13 +64,16 @@ func main() {
 func httpHandler() http.Handler {
 	routes := mux.NewRouter()
 
-	routes.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	redirectToRandomItem := func(w http.ResponseWriter, r *http.Request) {
 		idx := randBetween(0, len(happiness)-1)
 
 		http.Redirect(w, r, "/api/happy/happiness/"+happiness[idx].Id, http.StatusFound)
-	})
+	}
 
-	routes.HandleFunc("/happiness/{id}", func(w http.ResponseWriter, r *http.Request) {
+	routes.HandleFunc("/api/happy", redirectToRandomItem)
+	routes.HandleFunc("/api/happy/", redirectToRandomItem)
+
+	routes.HandleFunc("/api/happy/happiness/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 
 		record := findRecord(id)
