@@ -49,6 +49,7 @@ func findAttributionFromExifArtist(id string) (string, error) {
 
 	artist, err := exifData.Get(exif.Artist)
 	if err != nil {
+		//nolint:gosimple
 		if _, is := err.(exif.TagNotPresentError); is {
 			return "", nil
 		} else {
