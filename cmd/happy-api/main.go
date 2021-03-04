@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"embed"
 	"html/template"
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -30,11 +28,15 @@ func main() {
 		return
 	}
 
-	rootLogger := logex.StandardLogger()
+	srv := &http.Server{
+		Addr:    ":80",
+		Handler: httpHandler(),
+	}
 
-	osutil.ExitIfError(runStandaloneRestApi(
-		osutil.CancelOnInterruptOrTerminate(rootLogger),
-		rootLogger))
+	osutil.ExitIfError(httputils.CancelableServer(
+		osutil.CancelOnInterruptOrTerminate(logex.StandardLogger()),
+		srv,
+		func() error { return srv.ListenAndServe() }))
 }
 
 func httpHandler() http.Handler {
@@ -69,22 +71,12 @@ func httpHandler() http.Handler {
 			ImgSrc      string
 			Attribution string
 		}{
-			ImgSrc:      makeMediaUrl(id),
+			ImgSrc:      "https://s3.amazonaws.com/onni.function61.com/media/" + id,
 			Attribution: record.Attribution,
 		})
 	})
 
 	return routes
-}
-
-// for standalone use
-func runStandaloneRestApi(ctx context.Context, logger *log.Logger) error {
-	srv := &http.Server{
-		Addr:    ":80",
-		Handler: httpHandler(),
-	}
-
-	return httputils.CancelableServer(ctx, srv, func() error { return srv.ListenAndServe() })
 }
 
 func findRecord(id string) *Happiness {
@@ -99,8 +91,4 @@ func findRecord(id string) *Happiness {
 
 func randBetween(min, max int) int {
 	return min + rand.Intn(max-min+1)
-}
-
-func makeMediaUrl(id string) string {
-	return "https://s3.amazonaws.com/onni.function61.com/media/" + id
 }
