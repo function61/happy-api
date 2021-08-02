@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/function61/gokit/crypto/cryptoutil"
+	"github.com/function61/happy-api/static"
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,7 @@ func randBetween(min, max int) int {
 }
 
 func findAttributionFromExifArtist(id string) (string, error) {
-	f, err := images.Open("images/" + id + ".jpg")
+	f, err := static.Files.Open("images/" + id + ".jpg")
 	if err != nil {
 		return "", err
 	}

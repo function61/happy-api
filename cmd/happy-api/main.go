@@ -14,15 +14,14 @@ import (
 	"github.com/function61/gokit/log/logex"
 	"github.com/function61/gokit/net/http/httputils"
 	"github.com/function61/gokit/os/osutil"
+	"github.com/function61/happy-api/pkg/turbocharger/turbochargerapp"
+	"github.com/function61/happy-api/static"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 )
 
 //go:embed item.html
 var templates embed.FS
-
-//go:embed images/*
-var images embed.FS
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -54,6 +53,7 @@ func main() {
 	}
 
 	app.AddCommand(newEntry())
+	app.AddCommand(turbochargerapp.StaticFilesExportEntrypoint(static.Files))
 
 	osutil.ExitIfError(app.Execute())
 }
@@ -64,7 +64,7 @@ func httpHandler() http.Handler {
 		panic(err)
 	}
 
-	happiness, err := images.ReadDir("images")
+	happiness, err := static.Files.ReadDir("images")
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ func httpHandler() http.Handler {
 		http.Redirect(w, r, "/happy/"+fileIdFromFilename(happiness[idx].Name()), http.StatusFound)
 	}
 
-	routes.PathPrefix("/happy/images/").Handler(http.StripPrefix("/happy/", http.FileServer(http.FS(images))))
+	routes.PathPrefix("/happy/static").Handler(turbochargerapp.FileHandler("/happy/static", static.Files))
 
 	routes.HandleFunc("/happy", redirectToRandomItem)
 	routes.HandleFunc("/happy/", redirectToRandomItem)
@@ -101,7 +101,7 @@ func httpHandler() http.Handler {
 			ImgSrc      string
 			Attribution string
 		}{
-			ImgSrc:      "/happy/images/" + id + ".jpg",
+			ImgSrc:      "/happy/static/images/" + id + ".jpg",
 			Attribution: attribution,
 		})
 	})
