@@ -25,7 +25,7 @@ func main() {
 	// AWS Lambda doesn't support giving argv, so we use an ugly hack to detect when
 	// we're in Lambda
 	if lambdautils.InLambda() {
-		lambda.StartHandler(lambdautils.NewLambdaHttpHandlerAdapter(httpHandler()))
+		lambda.Start(lambdautils.NewLambdaHttpHandlerAdapter(httpHandler()))
 		return
 	}
 
