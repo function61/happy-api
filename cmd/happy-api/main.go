@@ -14,7 +14,6 @@ import (
 	"github.com/function61/gokit/os/osutil"
 	"github.com/function61/happy-api/pkg/turbocharger/turbochargerapp"
 	"github.com/function61/happy-api/static"
-	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 )
 
@@ -45,7 +44,7 @@ func main() {
 			osutil.ExitIfError(httputils.CancelableServer(
 				osutil.CancelOnInterruptOrTerminate(logex.StandardLogger()),
 				srv,
-				func() error { return srv.ListenAndServe() }))
+				srv.ListenAndServe))
 
 		},
 	}
@@ -67,7 +66,7 @@ func httpHandler() http.Handler {
 		panic(err)
 	}
 
-	routes := mux.NewRouter()
+	routes := http.NewServeMux()
 
 	redirectToRandomItem := func(w http.ResponseWriter, r *http.Request) {
 		idx := randBetween(0, len(happiness)-1)
@@ -75,13 +74,10 @@ func httpHandler() http.Handler {
 		http.Redirect(w, r, "/happy/"+fileIdFromFilename(happiness[idx].Name()), http.StatusFound)
 	}
 
-	routes.PathPrefix("/happy/static").Handler(turbochargerapp.FileHandler("/happy/static", static.Files))
-
-	routes.HandleFunc("/happy", redirectToRandomItem)
-	routes.HandleFunc("/happy/", redirectToRandomItem)
+	routes.Handle("/happy/static/", turbochargerapp.FileHandler("/happy/static", static.Files))
 
 	routes.HandleFunc("/happy/{id}", func(w http.ResponseWriter, r *http.Request) {
-		id := mux.Vars(r)["id"]
+		id := r.PathValue("id")
 
 		attribution, err := findAttributionFromExifArtist(id)
 		if err != nil { // assuming error is ErrNotExist
@@ -103,6 +99,9 @@ func httpHandler() http.Handler {
 			Attribution: attribution,
 		})
 	})
+
+	routes.HandleFunc("/happy", redirectToRandomItem)
+	routes.HandleFunc("/happy/", redirectToRandomItem)
 
 	return routes
 }
