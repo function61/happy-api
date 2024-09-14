@@ -3,10 +3,8 @@ package main
 import (
 	"embed"
 	"html/template"
-	"math/rand"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/function61/gokit/app/aws/lambdautils"
@@ -24,8 +22,6 @@ import (
 var templates embed.FS
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-
 	// AWS Lambda doesn't support giving argv, so we use an ugly hack to detect when
 	// we're in Lambda
 	if lambdautils.InLambda() {
@@ -42,6 +38,8 @@ func main() {
 			srv := &http.Server{
 				Addr:    ":80",
 				Handler: httpHandler(),
+
+				ReadHeaderTimeout: httputils.DefaultReadHeaderTimeout,
 			}
 
 			osutil.ExitIfError(httputils.CancelableServer(

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"math/rand"
+	"math/rand/v2"
 	"path/filepath"
 
 	"github.com/function61/gokit/crypto/cryptoutil"
@@ -28,8 +28,9 @@ func fileIdFromFilename(filename string) string {
 	return filename[0 : len(filename)-len(filepath.Ext(filename))]
 }
 
-func randBetween(min, max int) int {
-	return min + rand.Intn(max-min+1)
+func randBetween(min_, max_ int) int {
+	//nolint:gosec // ok
+	return min_ + rand.IntN(max_-min_+1)
 }
 
 func findAttributionFromExifArtist(id string) (string, error) {

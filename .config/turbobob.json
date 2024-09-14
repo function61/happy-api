@@ -6,16 +6,17 @@
 	"builders": [
 		{
 			"name": "default",
-			"uses": "docker://fn61/buildkit-golang:20210208_0951_8496e47f",
+			"uses": "docker://fn61/buildkit-golang:20240913_1923_331687a0",
 			"mount_destination": "/workspace",
 			"workdir": "/workspace",
 			"dev_http_ingress": "80",
 			"commands": {
-				"build": ["bin/build.sh"],
+				"build": ["build-go-project.sh", "--directory=cmd/happy-api/", "--binary-basename=happy-api", "--aws-lambda-zip"],
 				"dev": ["bash"]
 			},
 			"dev_shell_commands": [
-				{ "command": "rel/happy-api", "important": true }
+				{ "command": "rel/happy-api_linux-amd64", "important": true },
+				{ "command": "rel/happy-api_linux-amd64 new", "important": true }
 			]
 		},
 		{
