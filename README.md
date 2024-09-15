@@ -43,9 +43,9 @@ $ ./happy-api new
 nohH
 ```
 
-Add new picture to [cmd/happy-api/images/](cmd/happy-api/images/).
+Add new picture under [static/images/](static/images/)
 
-Add image attribution with `$ exiftool` command:
+Add image attribution URL with `$ exiftool` command:
 
 ```console
 $ exiftool "-artist=https://example.com/" nohH.jpg
